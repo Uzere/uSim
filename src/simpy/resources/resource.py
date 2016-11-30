@@ -167,6 +167,11 @@ class Resource(base.BaseResource):
         """Number of users currently using the resource."""
         return len(self.users)
 
+    @property
+    def waiting(self):
+        """Number of users currently waiting for the resource in queue."""
+        return len(self.queue)
+
     request = BoundClass(Request)
     """Request a usage slot."""
 
