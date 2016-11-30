@@ -195,6 +195,36 @@ class Environment(BaseEnvironment):
         heappush(self._queue,
                  (self._now + delay, priority, next(self._eid), event))
 
+
+    def generate(self, limit=Infinity, process=None, call=None, delay=1, initialDelay=0, args=[]):
+        """Creates a source of processes, starting new *process* or calling *call*
+        with interval *delay*, which is number or function"""
+        if limit < 0:
+            raise ValueError('limit must be > 0')
+
+        if initialDelay < 0:
+            raise ValueError('initialDelay must be > 0')
+
+        if process is None and call is None:
+            raise ValueError('You should give process to start function to call')
+
+        def generator2(limit):
+            yield self.timeout(initialDelay)
+            while limit > 0:
+                limit -= 1
+                if process is not None:
+                    self.process(process(*args))
+                else:
+                    call(*args)
+
+                if type(delay) in ('int', 'float'):
+                    yield self.timeout(delay)
+                elif type(delay) == 'function':
+                    yield self.timeout(delay())
+
+        self.process(generator2(limit))
+
+
     def peek(self):
         """Get the time of the next scheduled event. Return
         :data:`~simpy.core.Infinity` if there is no further event."""
