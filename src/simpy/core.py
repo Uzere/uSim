@@ -217,10 +217,12 @@ class Environment(BaseEnvironment):
                 else:
                     call(*args)
 
-                if type(delay) in ('int', 'float'):
+                if type(delay) in (int, float):
                     yield self.timeout(delay)
-                elif type(delay) == 'function':
+                elif callable(delay):
                     yield self.timeout(delay())
+                else:
+                    raise ValueError('Incorrect delay value')
 
         self.process(generator2(limit))
 
