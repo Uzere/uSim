@@ -3,6 +3,7 @@ Core components for event-discrete simulation environments.
 
 """
 import types
+import inspect
 from heapq import heappush, heappop
 from itertools import count
 
@@ -209,13 +210,20 @@ class Environment(BaseEnvironment):
             raise ValueError('You should give process to start function to call')
 
         def generator2(limit):
+            total = limit
             yield self.timeout(initialDelay)
             while limit > 0:
                 limit -= 1
                 if process is not None:
-                    self.process(process(*args))
+                    if 'genIndex' in inspect.getargspec(process)[0]:
+                        self.process(process(*args, genIndex = total - limit))
+                    else:
+                        self.process(process(*args))
                 else:
-                    call(*args)
+                    if 'genIndex' in inspect.getargspec(call)[0]:
+                        call(*args, genIndex = total - limit)
+                    else:
+                        call(*args)
 
                 if type(delay) in (int, float):
                     yield self.timeout(delay)
