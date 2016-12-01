@@ -15,6 +15,8 @@ used, there are several specialized subclasses of it.
 This module also defines the :exc:`Interrupt` exception.
 
 """
+
+from simpy import util
 from simpy._compat import PY2
 
 if PY2:
@@ -297,7 +299,7 @@ class Process(Event):
     Processes can be interrupted during their execution by :meth:`interrupt`.
 
     """
-    def __init__(self, env, generator):
+    def __init__(self, env, generator, report='sum'):
         if not hasattr(generator, 'throw'):
             # Implementation note: Python implementations differ in the
             # generator types they provide. Cython adds its own generator type
@@ -320,6 +322,14 @@ class Process(Event):
 
         # Schedule the start of the execution of the process.
         self._target = Initialize(env, self)
+
+        if not env.report:
+            report = False
+
+        if report != False:
+            self.report = report
+            self.stats = util.ProcessReport.getReport(self)
+
 
     def _desc(self):
         """Return a string *Process(process_func_name)*."""
@@ -362,6 +372,8 @@ class Process(Event):
             try:
                 if event._ok:
                     event = self._generator.send(event._value)
+                    if self.report:
+                        self.stats.count[self._generator.gi_frame.f_lineno] += 1
                 else:
                     # The process has no choice but to handle the failed event
                     # (or fail itself).
@@ -376,6 +388,8 @@ class Process(Event):
                         if hasattr(event._value, '__traceback__'):
                             exc.__traceback__ = event._value.__traceback__
                     event = self._generator.throw(exc)
+                    if self.report:
+                        self.stats.throwCount[self._generator.gi_frame.f_lineno] += 1
             except StopIteration as e:
                 # Process has terminated.
                 event = None

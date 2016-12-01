@@ -144,6 +144,10 @@ class BaseEnvironment(object):
                 raise RuntimeError('No scheduled events left but "until" '
                                    'event was not triggered: %s' % until)
 
+        if self.report:
+            print self.processReport
+
+
     def exit(self, value=None):
         """Stop the current process, optionally providing a ``value``.
 
@@ -166,7 +170,7 @@ class Environment(BaseEnvironment):
     :attr:`process`, :attr:`timeout` and :attr:`event`.
 
     """
-    def __init__(self, initial_time=0):
+    def __init__(self, initial_time=0, report=True):
         self._now = initial_time
         self._queue = []  # The list of all currently scheduled events.
         self._eid = count()  # Counter for event IDs
@@ -174,6 +178,10 @@ class Environment(BaseEnvironment):
 
         # Bind all BoundClass instances to "self" to improve performance.
         BoundClass.bind_early(self)
+
+        if report:
+            self.report = True
+            self.processReport = {}
 
     @property
     def now(self):
