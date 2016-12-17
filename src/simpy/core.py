@@ -143,11 +143,11 @@ class BaseEnvironment(object):
                 assert not until.triggered
                 raise RuntimeError('No scheduled events left but "until" '
                                    'event was not triggered: %s' % until)
-
-        if self.report:
-            # print self.processReport
-            for i in self.processReport.keys():
-                print self.processReport[i].jsonTag()
+        finally:
+            if self.report:
+                # print self.processReport
+                for i in self.processReport.keys():
+                    print self.processReport[i].jsonTag()
 
 
     def exit(self, value=None):
