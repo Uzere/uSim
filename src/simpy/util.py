@@ -104,10 +104,13 @@ class ProcessReport(object):
         )
 
     def jsonTag(self):
+        with open(self.file) as f:
+            lines = f.readlines()
+
         content = []
         keys = sorted(list(set(self.count.keys()+self.throwCount.keys())))
         for i in keys:
-            content.append('['+str(i)+', '+str(self.count[i])+', '+str(self.throwCount[i])+']')
+            content.append('['+str(i)+', "'+lines[i-1].replace('"', r'\"')[:-1]+'", '+str(self.count[i])+', '+str(self.throwCount[i])+']')
 
         content = ", ".join(content)
         return ('<json>'+
