@@ -111,5 +111,5 @@ class ProcessReport(object):
 
         content = ", ".join(content)
         return ('<json>'+
-            '{"$title": "'+self.file+' '+self.name+'", $content: ['+content+']}</json>'
+            '{"$title": "'+self.file+' '+self.name+'", "$content": ['+content+']}</json>'
         )
