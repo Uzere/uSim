@@ -6,6 +6,7 @@ A collection of utility functions:
 
 """
 from collections import defaultdict
+import json
 
 
 def start_delayed(env, generator, delay):
@@ -100,4 +101,15 @@ class ProcessReport(object):
             self.file+' '+self.name+':'+str(self.line) + '\n' +
             self.count.__repr__() + '\n' +
             self.throwCount.__repr__() + '\n'
+        )
+
+    def jsonTag(self):
+        content = []
+        keys = sorted(list(set(self.count.keys()+self.throwCount.keys())))
+        for i in keys:
+            content.append('['+str(i)+', '+str(self.count[i])+', '+str(self.throwCount[i])+']')
+
+        content = ", ".join(content)
+        return ('<json>'+
+            '{"$title": "'+self.file+' '+self.name+'", $content: ['+content+']}</json>'
         )

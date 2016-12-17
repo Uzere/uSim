@@ -145,7 +145,9 @@ class BaseEnvironment(object):
                                    'event was not triggered: %s' % until)
 
         if self.report:
-            print self.processReport
+            # print self.processReport
+            for i in self.processReport.keys():
+                print self.processReport[i].jsonTag()
 
 
     def exit(self, value=None):
