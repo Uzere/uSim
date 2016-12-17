@@ -110,7 +110,7 @@ class ProcessReport(object):
         content = []
         keys = sorted(list(set(self.count.keys()+self.throwCount.keys())))
         for i in keys:
-            content.append('['+str(i)+', "'+lines[i-1].replace('"', r'\"')[:-1]+'", '+str(self.count[i])+', '+str(self.throwCount[i])+']')
+            content.append('['+str(i)+', "'+lines[i-1].replace('"', r'\"')[:-1].strip()+'", '+str(self.count[i])+', '+str(self.throwCount[i])+']')
 
         content = ", ".join(content)
         return ('<json>'+
